@@ -1,0 +1,244 @@
+<!doctype html>
+<html>
+	<head>
+		<meta charset="utf-8" />
+		<title>OTf-8 C-Wrapper</title>
+		<link rel="stylesheet" href="../css/CWrapperFormatSheet.css" />
+		<script src="../js/Highlighter.js"></script>
+	</head>
+	<body>
+		<div id="BackgroundImage">
+			<aside id="LeftSideBar">
+				<div id="LeftSideBarContents">
+					<a href="../Header.html" class="BlueShineText" id="BackBtn">&ltBack&gt</a>
+				</div>
+			</aside>
+			<div class="Wrap" id="MiddleWrap">
+				<div id="MiddleTextArea">
+					
+					<pre id="Title">
+Write Something.......</pre>
+					<pre id="DetailInfo">
+Writer: Drippy Summer</pre>
+					<pre id="Text">
+	As many guys in my same ages consider it quite simple to look at the following codes:</pre>
+					<div class="DemoCodePanel">
+						<pre class="DemoCode" id="DemoCode1">
+#include &ltstdio.h&gt
+int main(int argc, char* argv[])
+{
+	printf("You guys should know what I'm doing...\n");
+	return 0;
+}
+						</pre>
+					</div>
+					<pre id="Text">
+	You might yell out without several seconds to glance at that. "Our professor told this is a main function -- something a program enters first and, then uses a tool called std output stream to print the string onto the screen..." blah blah blah.
+	Well, most students, and even my friends with general CS courses while in fresh year in university (but they are mostly not in CS department) can explain like that. But what if you look at the following codes?</pre>
+				<div class="DemoCodePanel">
+					<pre class="DemoCode" id="DemoCode2">
+VOID InsertionToNewSection(IN LPSTR fileName, OUT LPVOID* pImageBuffer)
+{
+	LPVOID pFileBuffer = NULL;
+	LPVOID pTempBuffer = NULL;
+	LPVOID pointer = NULL;
+	LPVOID pInsertionBegin = NULL;
+	LPVOID pTempCode = NULL;
+	LPVOID pLastSection = NULL;
+	DWORD fileSize = 0;
+	DWORD imageSize = 0;
+	DWORD previousImageSize = 0;
+	DWORD insertSize = 0;
+	DWORD JMP = 0;
+	DWORD i;
+
+	//Initialize parameters
+	SectionList.clear();
+
+	//read PE file
+	fileSize = readPEFile(fileName, &amppFileBuffer);
+	if (!fileSize || !pFileBuffer)
+	{
+		printf(&quotFail to read the PE file!\n&quot);
+		return;
+	}
+
+	//Read the headers
+	//To DosHeader
+	pointer = pFileBuffer;
+	DosHeader = (DOS_HEADER*)pointer;
+
+	//To NTHeader
+	pointer = (LPBYTE)((DWORD)DosHeader-&gte_lfanew + (DWORD)pFileBuffer);
+	NTHeader = (NT_HEADER*)pointer;
+
+	//To SectionList
+	pointer = ((LPBYTE)pointer + 24 + NTHeader-&gtFileHeader.SizeOfOptionalHeader);
+	for (i = 0; i &lt NTHeader-&gtFileHeader.NumberOfSections; i++)
+	{
+		SECTION_LIST* Section = (SECTION_LIST*)pointer;
+		SectionList.push_back(Section);
+		pointer = ((LPBYTE)pointer + 40);
+	}
+
+	//Calculate the resized ImageBuffer
+	insertSize = (ShellCodeLen / NTHeader-&gtOptionalHeader.SectionAlignment + 1) * NTHeader-&gtOptionalHeader.SectionAlignment;
+	previousImageSize = NTHeader-&gtOptionalHeader.SizeOfImage;
+	imageSize = NTHeader-&gtOptionalHeader.SizeOfImage + insertSize;
+
+	//Assign the space for the resized ImageBuffer
+	*pImageBuffer = malloc(imageSize);
+	if (!*pImageBuffer)
+	{
+		printf(&quotUnable to assign the space for the ImageBuffer!\n&quot);
+		return;
+	}
+	memset(*pImageBuffer, 0, imageSize);
+	NTHeader-&gtOptionalHeader.SizeOfImage = imageSize;
+
+	//Copy the headers to the ImageBuffer
+	for (i = 0; i &lt NTHeader-&gtOptionalHeader.SizeOfHeaders; i++)
+	{
+		*((LPBYTE)((DWORD)*pImageBuffer + i)) = *((LPBYTE)((DWORD)pFileBuffer + i));
+	}
+
+	//Copy the sections to the ImageBuffer
+	for (std::list&ltSECTION_LIST*&gt::iterator it = SectionList.begin(); it != SectionList.end(); it++)
+	{
+		pointer = (LPBYTE)((*it)-&gtPointerToRawData + (DWORD)pFileBuffer);
+		pTempBuffer = (LPBYTE)((*it)-&gtVirtualAddress + (DWORD)*pImageBuffer);
+		for (i = 0; i &lt (*it)-&gtSizeOfRawData; i++)
+		{
+			*((LPBYTE)((DWORD)pTempBuffer + i)) = *((LPBYTE)((DWORD)pointer + i));
+		}
+		pLastSection = (LPVOID)((DWORD)pTempBuffer + i);
+	} 
+
+	//Read and change the focus on ImageBuffer
+	readHeaderInfo(*pImageBuffer);
+
+	//Modify the shellcode entry and imageSize
+	pInsertionBegin = (LPVOID)((DWORD)*pImageBuffer + previousImageSize);
+	pTempCode = pInsertionBegin;
+	printf(&quot%x, %x \n&quot, previousImageSize, (DWORD)*pImageBuffer + previousImageSize);
+
+	//Insert the new section list
+	i = 0;
+	pointer = NULL;
+	for (std::list&ltSECTION_LIST*&gt::iterator it = SectionList.begin(); it != SectionList.end(); it++)
+	{
+		if (i == NTHeader-&gtFileHeader.NumberOfSections - 1)
+		{
+			pointer = (LPVOID)((DWORD)(*it) + 40);
+			if (NTHeader-&gtOptionalHeader.SizeOfHeaders + (DWORD)pFileBuffer - (DWORD)pointer &lt 80)
+			{
+				printf(&quotUnable to insert the new section list!\n&quot);
+				pointer = NULL;
+				i = 0;
+				return;
+			}
+			SECTION_LIST* Section = (SECTION_LIST*)pointer;
+			SectionList.push_back(Section);
+			NTHeader-&gtFileHeader.NumberOfSections++;
+			break;
+		}
+		i++;
+	}
+
+	//Clear the stub in the following SectionList 
+	//(NTHeader-&gtOptionalHeader.SizeOfHeaders + (DWORD)*pImageBuffer - (DWORD)pointer) is the old version and aborted now
+	for (i = 0; i &lt 80; i++)
+	{
+		*((LPBYTE)((DWORD)pointer + i)) = 0;
+	}
+
+	//Insertion:
+	//---------------------------------------------------------------------------------
+	//TODO the code insertion here. This may vary among different types of insert codes
+
+	//Copy the format shellcode in position
+	for (i = 0; i &lt ShellCodeLen; i++)
+	{
+		*((LPBYTE)((DWORD)pInsertionBegin + i)) = shellCode[i];
+	}
+
+	//Calculate and fill in the MessageBox JMP address
+	JMP = MessageBoxAddr - ((DWORD)pTempCode + 13 - (DWORD)*pImageBuffer + NTHeader-&gtOptionalHeader.ImageBase);
+	pTempCode = (LPVOID)((DWORD)pTempCode + 9);
+	*((PDWORD)pTempCode) = JMP;
+	pTempCode = pInsertionBegin;
+
+	//Calculate and fill in the OEP JMP address
+	JMP = NTHeader-&gtOptionalHeader.AddressOfEntryPoint - ((DWORD)pTempCode + 18 - (DWORD)*pImageBuffer);
+	pTempCode = (LPVOID)((DWORD)pTempCode + 14);
+	*((PDWORD)pTempCode) = JMP;
+	pTempCode = pInsertionBegin;
+	printf(&quot%x\n&quot,(DWORD)pTempCode - (DWORD)*pImageBuffer);
+
+	//Change the OEP and let it point to the beginning of the shellcode
+	NTHeader-&gtOptionalHeader.AddressOfEntryPoint = ((DWORD)pInsertionBegin - (DWORD)*pImageBuffer);
+
+	//End the code insertion
+	//---------------------------------------------------------------------------------
+
+	//Set Characteristics for the new section list
+	i = 0;
+	for (std::list&ltSECTION_LIST*&gt::iterator it = SectionList.begin(); it != SectionList.end(); it++)
+	{
+		if (i == NTHeader-&gtFileHeader.NumberOfSections - 1)
+		{
+			//Set Name
+			strncpy((CHAR*)(*it)-&gtName, &quot.shell&quot, strlen(&quot.shell&quot));
+
+			//Set VirtualSize
+			(*it)-&gtVirtualSize = ShellCodeLen;
+
+			//Set VirtualAddress
+			(*it)-&gtVirtualAddress = ((DWORD)pInsertionBegin - (DWORD)*pImageBuffer);
+
+			//Set SizeOfRawData
+			(*it)-&gtSizeOfRawData = (ShellCodeLen / NTHeader-&gtOptionalHeader.FileAlignment + 1) * NTHeader-&gtOptionalHeader.FileAlignment;
+
+			//Set PointerToRawData
+			(*it)-&gtPointerToRawData = (DWORD)pInsertionBegin - (DWORD)*pImageBuffer - (NTHeader-&gtOptionalHeader.SectionAlignment - NTHeader-&gtOptionalHeader.FileAlignment) * (NTHeader-&gtFileHeader.NumberOfSections);
+
+			//Set PointerToRelocations
+			(*it)-&gtPointerToRelocations = 0;
+
+			//Set PointerToLinenumbers
+			(*it)-&gtPointerToLinenumbers = 0;
+
+			//Set NumberOfRelocations
+			(*it)-&gtNumberOfRelocations = 0;
+
+			//Set NumberOfLinenumbers
+			(*it)-&gtNumberOfLinenumbers = 0;
+
+			//Set Characteristics (Executable, writable, readable)
+			(*it)-&gtCharacteristics = TextSectionCharacter;
+		}
+		i++;
+	}
+	pFileBuffer = NULL;
+}
+</pre>
+				</div>
+				<pre id="Text">
+	Such a function seems messy and might confuse you what this is functioning. Well this is a piece of code I wrote several months before aiming to inject piece of code to an executable programm and this is just a function of it. This work, obvious is not what we call forward software engineering, but the reverse process of it. For instance, if you are a worker in a car manufacturing plant, your job is just to build a car from basic components. Nevertheless, if you are an armanent expert and offered to get the information of foreign weapons, if any (maybe some guns left in the battle), you will choose the method to dismantle that weapon and analyze part by part. Actually at this time, you're doing reverse engineering.
+	I actually start self-learning reverse software engineering a year ago when I struggle from assembly language. But after half a tough year, C and C++ seems quite friendly to me. For when you look at codes in a more fundamental aspect(such as assembly or machine codes "01001010"), those doubts behind data structures, procedure-oriented, object-oriented, compiling basic and operating system find their way to nowhere.
+	Considering this is just a intro and I gonna make it relaxed. Following is just for those without computer bases.</pre>
+				<h1 style="color:RGB(255, 200, 210); font-family: 'Iceland'">We are getting started...</h3>
+				<pre id="Text">
+	Maybe most of us use computers every day. As I was young, I personally, and people around me all use Windows operating system. And most of themplays a pratical drive on using that "operating interface". But few of them learnt how system calculate those numbers, handle those events when they open the calculator, type the keyboard, and words, figures appears on Windows.</pre>
+				<div id="FooterBlank">
+					
+				</div>
+				</div>
+			</div>
+			<aside id="RightSideBar">
+				
+			</aside>
+		</div>
+		<script>HighLight(2);</script>
+	</body>
+</html>

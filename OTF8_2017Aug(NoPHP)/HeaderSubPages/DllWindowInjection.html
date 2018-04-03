@@ -1,0 +1,120 @@
+<!doctype html>
+<html>
+	<head>
+		<meta charset="utf-8" />
+		<title>Dll window injection</title>
+		<link rel="stylesheet" href="../css/CWrapperFormatSheet.css" />
+		<script src="../js/Highlighter.js"></script>
+	</head>
+	<body>
+		<div id="BackgroundImage">
+			<aside id="LeftSideBar">
+				<div id = "LeftSideBarContents">
+					<a href="../Header.html" class="BlueShineText" id="BackBtn">&ltBack&gt</a>
+				</div>
+			</aside>
+			<div class="Wrap" id="MiddleWrap">
+				<div id="MiddleTextArea">
+					
+					<pre id="Title">
+Write a window in a dll</pre>
+					<pre id="DetailInfo">
+Writer: DrippySummer</pre>
+					
+					<pre id="Text">
+	For win32 developers, there are several parts in the windows project. So, let's write a basic project by ourselves.
+	Below is an empty project example, but filled with my own codes.
+	WindowTemplate.h:
+					</pre>
+					<div class="DemoCodePanel">
+						<pre class="DemoCode" id="DemoCode1">
+#pragma once
+#include &ltWindows.h&gt
+
+int __stdcall WinMain(HINSTANCE hInstance, HINSTANCE hPresInstance, LPSTR lpCmdLine, int nCmdShow);
+LRESULT __stdcall WinProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam);
+						</pre>
+					</div>
+					<pre id="Text">
+	Next is the WindowTemplate.cpp:
+					</pre>
+					<div class="DemoCodePanel">
+						<pre class="DemoCode" id="DemoCode2">
+#include &quotWindowTemplate.h&quot
+
+int __stdcall WinMain(HINSTANCE hInstance, HINSTANCE hPresInstance, LPSTR lpCmdLine, int nCmdShow)
+{
+	WNDCLASSEX wndClass = { 0 };
+	wndClass.cbSize = sizeof(WNDCLASSEX);
+	wndClass.style = CS_HREDRAW | CS_VREDRAW;
+	wndClass.lpfnWndProc = WinProc;
+	wndClass.cbClsExtra = 0;
+	wndClass.cbWndExtra = 0;
+	wndClass.hInstance = hInstance;
+	wndClass.hIcon = NULL;
+	wndClass.hCursor = ::LoadCursor(NULL, IDC_ARROW);
+	wndClass.hbrBackground = NULL;
+	wndClass.lpszMenuName = NULL;
+	wndClass.lpszClassName = TEXT(&quotWindowTemplate&quot);
+	
+	if (!RegisterClassEx(&ampwndClass))
+	{
+		return -1;
+	}
+
+	HWND hwnd = CreateWindowEx
+	(
+		NULL,
+		TEXT(&quotWindowTemplate&quot),
+		TEXT(&quotWindowTest&quot),
+		WS_OVERLAPPEDWINDOW | ~WS_THICKFRAME | ~WS_MAXIMIZEBOX,
+		100,
+		50,
+		800,
+		600,
+		NULL,
+		NULL,
+		hInstance,
+		NULL
+	);
+
+	MoveWindow(hwnd, 100, 50, 800, 600, TRUE);
+	ShowWindow(hwnd, nCmdShow);
+	UpdateWindow(hwnd);
+
+	MSG msg = { 0 };
+	while (msg.message != WM_QUIT)
+	{
+		if (PeekMessage(&ampmsg, 0, 0, 0, PM_REMOVE))
+		{
+			TranslateMessage(&ampmsg);
+			DispatchMessage(&ampmsg);
+		}
+	}
+
+	UnregisterClass(TEXT(&quotWindowTemplate&quot), hInstance);
+	return 0;
+}
+
+LRESULT __stdcall WinProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
+{
+	switch (msg)
+	{
+	case WM_DESTROY:
+		PostQuitMessage(0);
+		break;
+	default:
+		return DefWindowProc(hwnd, msg, wParam, lParam);
+	}
+	return 0;
+}
+
+						</pre>
+					</div>
+					
+				</div>
+			</div>
+		</div>
+		<script>HighLight(2)</script>
+	</body>
+</html>

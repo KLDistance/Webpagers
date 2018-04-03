@@ -1,0 +1,81 @@
+
+#Background1, #Background2
+{
+	width: 100%;
+	height: 100%;
+	position: fixed;
+	top: 0;
+	left: 0;
+	z-index: -1;
+}
+#Background1
+{
+	background: url("../BackgroundImg/Background1_1.png");
+	display: block;
+}
+#Background2
+{
+	background: url("../BackgroundImg/Background1_3.png");
+	display: block;
+	
+}
+#indexMainTitle, #indexSubTitle
+{
+	color: RGB(200, 195, 205);
+	font-family: Iceland;
+	text-align: center;
+}
+
+#indexMainTitle
+{
+	font-size: 9vmin;
+	margin: auto;
+	margin-top: 4%;
+	-moz-user-select: none;
+	cursor: pointer;
+}
+
+#indexMainTitle:hover
+{
+	color: RGB(150, 100, 205);
+}
+
+#indexSubTitle
+{
+	margin-top: 4%;
+	font-size: 4vmin;
+	-moz-user-select: none;
+}
+
+#indexPageLinkButtonList
+{
+	margin-top: 49%;
+	text-align: center;
+}
+
+#SubLinkButton1
+{
+	font-size: 6vmin;
+	display: inline-block;
+	margin-right: 100px;
+}
+
+#SubLinkButton2
+{
+	font-size: 6vmin;
+	display: inline-block;
+	margin-right: 100px;
+}
+
+#SubLinkButton3
+{
+	font-size: 6vmin;
+	display: inline-block;
+	margin-right: 100px;
+}
+
+#Exit
+{
+	font-size: 6vmin;
+	display: inline-block;
+}

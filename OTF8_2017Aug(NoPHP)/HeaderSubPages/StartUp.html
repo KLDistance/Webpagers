@@ -1,0 +1,76 @@
+<!doctype html>
+<html>
+	<head>
+		<meta charset="utf-8" />
+		<title>OTf-8 StartUp</title>
+		<link rel="stylesheet" href="../css/HeaderSub_StartUp_Sheet.css" />
+		
+	</head>
+	<body>
+		<div id="BackgroundImage">
+			<div id="MiddleWrap">
+				<div id="MiddleTextArea">
+					
+					<h1 id="Title">
+						To Start With,
+					</h1>
+					
+					<p id="Text">
+						
+					</p>
+					
+					<div id="DemoCodePanel1">
+						<pre id="DemoCode1">
+#include &ltmalloc.h&gt
+int main()
+{
+	while(1)
+	{
+		malloc(10000000);
+	}
+	return 0;
+}	
+						</pre>
+					</div>
+					
+					<div id="BackBtn">
+						<a class="BlueShineText" href="../Header.html">&ltBack To Header&gt</a>
+					</div>
+					
+				</div>
+			</div>
+		</div>
+		<script>
+			
+        window.onload = function(){
+            var words = "Some tutorials in this column...<br>" + 
+            "In the Header region I will upload some articles in the realm of chemistry and programming" + 
+            " and maybe, always original.<br>" + 
+            "This page is just a demonstration for visitors.<br>" +
+            "Below is an example code in C, which will cause a memory 'explosion'. (・Д・)ノ<br>";
+            var displayPanel = document.getElementById('Text');
+            var i = 0;
+            timer = setInterval(function(){
+            	 if(words.substring(i - 1, i + 3) != "<br>")
+                {
+            	   var SubString = words.substring(0,i);
+                	displayPanel.innerHTML = SubString;
+                }
+                i++;
+                if(displayPanel.innerHTML == words){
+                    document.getElementById('DemoCodePanel1').style.display = "block";
+                    document.getElementById('BackBtn').style.display = "block";
+                    clearInterval(timer);
+                }
+                document.onkeydown = function()
+                {
+                	displayPanel.innerHTML = words;
+                	document.getElementById('DemoCodePanel1').style.display = "block";
+                  document.getElementById('BackBtn').style.display = "block";
+                  clearInterval(timer);
+                }
+            },50);
+        }
+    </script>
+	</body>
+</html>

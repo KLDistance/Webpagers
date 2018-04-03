@@ -1,0 +1,174 @@
+#BackgroundImage
+{
+	width: 100%;
+	height: 100%;
+	z-index: -1;
+	position: fixed;
+	top: 0;
+	left: 0;
+	background: url("../BackgroundImg/IceFlower.png");
+	background-size: 100% 100%;
+	display: block;
+	overflow: hidden;
+}
+
+#LeftSideBar
+{
+	width: 15%;
+	height: 40%;
+	float: left;
+}
+#LeftSideBarContents
+{
+	margin-top: 2vmin;
+	text-align: center;
+}
+#BackBtn
+{
+	-moz-user-select: none;
+	font-size: 3vmin;
+	margin: auto;
+	margin-top: 5vmin;
+}
+
+#MiddleWrap
+{
+	width: 70%;
+	height: 100%;
+	margin: auto;
+	background: transparent;
+	float:left;
+	overflow: hidden;
+}
+
+#RightSideBar
+{
+	width: 15%;
+	height: 100%;
+	float: left;
+}
+
+#MiddleTextArea
+{
+	min-width: 54vmin;
+	width: 102%;
+	height: 100%;
+	margin: 0 auto;
+	color: white;
+	background: RGBA(0, 0, 0, 0.6);
+	padding-left: 5vmin;
+	overflow-y: scroll;
+	overflow-x: hidden;
+}
+
+#Title
+{
+	white-space: pre-wrap;
+	word-wrap: break-word;
+	color: RGB(255, 240, 255);
+	font-size: 5vmin;
+	font-family: 'Berlin Sans FB';
+	margin-right: 10vmin;
+}
+
+#DetailInfo
+{	
+	white-space: pre-wrap;
+	word-wrap: break-word;
+	font-family: 'Cambria Math';
+	color: RGB(210, 200, 255);
+	padding-left: 5vmin;
+	font-size: 2.5vmin;
+	margin-right: 10vmin;
+}
+
+#Text
+{
+	white-space: pre-wrap;
+	word-wrap: break-word;
+	font-family: 'Cambria Math';
+	font-size: 2vmin;
+	margin-right: 10vmin;
+}
+
+.DemoCodePanel
+{
+	padding-left: 2vmin;
+	margin-right: 10vmin;
+	margin-top: 2vmin;
+	background: RGBA(200, 200, 200, 0.15);
+	overflow: hidden;
+}
+
+.DemoCode
+{
+	white-space: pre-wrap;
+	word-wrap: break-word;
+	color: white;
+	font-family: 'Consolas';
+	font-size: 2vmin;
+	margin-top: 1vmin;
+	margin-right: 1vmin;
+	padding-top: 15px;
+}
+
+#FooterBlank
+{
+	width: 100%;
+	height: 40vmin;
+}
+
+a.BlueShineText
+{
+  text-decoration:none; 
+  -webkit-transition: all 0.5s;
+  -moz-transition: all 0.5s;
+  transition: all 0.5s;
+}
+
+.BlueShineText
+{
+  font-size: 3vmin;
+  color:#33ccff;
+  font-family: 'Iceland';
+  -moz-user-select: none;
+}
+
+.BlueShineText:hover
+{
+  -webkit-animation: neon2 2.5s ease-in-out infinite alternate;
+  -moz-animation: neon2 2.5s ease-in-out infinite alternate;
+  animation: neon2 2.5s ease-in-out infinite alternate;
+  color:#ffffff;  
+}
+
+@font-face 
+{
+  font-family: 'Iceland';
+  font-style: normal;
+  font-weight: 400;
+  src: local('Iceland'), local('Iceland-Regular'), url(../Fonts/Iceland.woff) format('woff');
+}
+
+@-webkit-keyframes neon2 {
+  from {
+    text-shadow: 0 0 10px #eee,
+               0 0 20px  #eee,
+               0 0 30px  #eee,
+               0 0 40px  #228DFF,
+               0 0 70px  #228DFF,
+               0 0 80px  #228DFF,
+               0 0 100px #228DFF,
+               0 0 150px #228DFF;
+  }
+  to {
+    text-shadow: 0 0 5px #eee,
+               0 0 10px #eee,
+               0 0 15px #eee,
+               0 0 20px #228DFF,
+               0 0 35px #228DFF,
+               0 0 40px #228DFF,
+               0 0 50px #228DFF,
+               0 0 75px #228DFF;
+  }
+}
